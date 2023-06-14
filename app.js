@@ -16,7 +16,7 @@ wppconnect.create({
     session: 'whatsbot',
     autoClose: false,
     puppeteerOptions: { args: ['--no-sandbox'] },
-    catchQR: (qrCode, asciiQR) => {console.log(qrCode); qrwapp = qrCode}
+    catchQR: (qrCode, base64Qr) => {console.log(base64Qr); qrwapp = qrCode}
 })
     .then((client) =>
     
