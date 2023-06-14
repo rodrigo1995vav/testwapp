@@ -22,7 +22,7 @@ wppconnect.create({
     
         client.onMessage((message) => {
         
-            console.log('Mensagem digitada pelo usuário: ' + message.body);
+            console.log('Mensagem digitada pelo usuários: ' + message.body);
             
             client.sendText(message.from, 'PING! Mande um PONG para mim:')
                 .then((result) => {
