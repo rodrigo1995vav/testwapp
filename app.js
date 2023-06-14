@@ -12,13 +12,15 @@ const wppconnect = require('@wppconnect-team/wppconnect');
 var app = express();
 
 var qrwapp
+var clientWeb 
 wppconnect.create({
     session: 'whatsbot',
     autoClose: false,
     puppeteerOptions: { args: ['--no-sandbox'] },
     catchQR: (qrCode, base64Qr) => {console.log(base64Qr); qrwapp = qrCode}
 })
-    .then((client) =>
+    .then((client) =>{
+clientWeb = client;
     
         client.onMessage((message) => {
         
@@ -31,7 +33,7 @@ wppconnect.create({
                 .catch((erro) => {
                     console.error('ERRO: ', erro);
                 });
-        }))
+        })})
         
     .catch((error) =>
         console.log(error));
@@ -57,6 +59,47 @@ app.get("/qr", (req, res) => {
   }
 });
 
+app.post("/send-message", async (req, res) => {
+  try {
+    const { number, message } = req.body;
+    //const media = await MessageMedia.fromUrl(imageUrl);
+    number.map(async (phone) => {
+      setTimeout(async () => {
+        await clientWeb
+          .sendText(`${phone}@c.us`, message)
+          .then(async (message) => {
+            console.log("MESSAGE SENT");
+            console.log(message);
+
+            // const user = await Person.findOne({
+            //   number: message._data.to._serialized,
+            // });
+            // console.log(user);
+
+            // if (!user) {
+            //   const newPerson = new Person({
+            //     name: "Sin nombre",
+            //     number: message._data.to._serialized,
+            //     active: false,
+            //   });
+            //   await Person.create(newPerson);
+            // }
+            // const newMessage = new Message({
+            //   message: message.body,
+            //   number: message._data.from._serialized,
+            //   name: "Api User Number Name",
+            //   to: message._data.to._serialized,
+            // });
+            // await Message.create(newMessage);
+          })
+          .catch((err) => console.error(err));
+      }, 1000);
+    });
+    res.send("Mensaje enviado con éxito.");
+  } catch (error) {
+    res.status(500).send("Error al enviar el mensaje: " + error);
+  }
+});
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
